@@ -9,4 +9,6 @@ type Drawable interface {
 	Y() int
 	SetX(v int)
 	SetY(v int)
+	Width() int
+	Height() int
 }

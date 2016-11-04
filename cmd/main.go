@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/gdamore/tcell"
 	"fmt"
-	"os"
-	"github.com/gdamore/tcell/encoding"
 	"github.com/demouth/mario-go"
+	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/encoding"
+	"os"
 	"time"
 )
 
@@ -35,9 +35,31 @@ func main() {
 	world := mario_go.NewWorld(s)
 	world.Width = w
 	world.Height = h
-	world.Draw()
 	sp := mario_go.NewMario()
-	world.AddChild(sp)
+	sp.SetX(10)
+	sp.SetY(50)
+	world.SetMario(sp)
+	ground := mario_go.NewGround()
+	ground.SetX(0)
+	ground.SetY(0)
+	ground2 := mario_go.NewGround()
+	ground2.SetX(16)
+	ground2.SetY(0)
+	ground3 := mario_go.NewGround()
+	ground3.SetX(32)
+	ground3.SetY(0)
+	ground4 := mario_go.NewGround()
+	ground4.SetX(60)
+	ground4.SetY(10)
+	ground5 := mario_go.NewGround()
+	ground5.SetX(100)
+	ground5.SetY(24)
+	world.AddObject(ground)
+	world.AddObject(ground2)
+	world.AddObject(ground3)
+	world.AddObject(ground4)
+	world.AddObject(ground5)
+	world.Draw()
 
 	quit := make(chan struct{})
 
@@ -57,7 +79,7 @@ func main() {
 				} else if ev.Key() == tcell.KeyUp {
 					sp.Jump()
 				} else if ev.Key() == tcell.KeyDown {
-					sp.SetY(sp.Y()-1)
+					sp.SetY(sp.Y() - 1)
 				}
 			case *tcell.EventResize:
 				w, h = s.Size()
@@ -69,17 +91,24 @@ func main() {
 		}
 	}()
 
-	loop:
+loop:
 	for {
 		select {
 		case <-quit:
 			break loop
-		case <-time.After(time.Millisecond * 20):
+		case <-time.After(time.Millisecond * 25):
 		}
+		st := tcell.StyleDefault.Background(tcell.NewHexColor(0x6AADFD))
+		s.Fill(' ', st)
+		//s.Clear()
 		sp.Move()
+		world.HitTest()
+		world.CameraX = -sp.X() + 30
+		if world.CameraX > 0 {
+			world.CameraX = 0
+		}
 		world.Draw()
 		s.Show()
-		s.Clear()
 	}
 
 	s.Fini()

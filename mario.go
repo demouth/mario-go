@@ -7,6 +7,7 @@ type Mario struct {
 	sx      float32
 	sy      float32
 	reverse bool
+	landing bool
 }
 
 func NewMario() *Mario {
@@ -24,16 +25,37 @@ func (m *Mario) Move() {
 	if math.Absf(m.sx) < 0.1 {
 		m.sx = 0
 	}
+	if m.x < 0 {
+		m.x = 0
+		m.StopX()
+	}
 	if m.y < 0 {
 		m.y = 0
-		m.sy = 0
+		m.Land()
 	}
+}
+
+func (m *Mario) StopX() {
+	m.sx = 0
+}
+
+func (m *Mario) StopY() {
+	m.sy = 0
+}
+
+func (m *Mario) Land() {
+	m.sy = 0
+	m.landing = true
+}
+
+func (m *Mario) Fall() {
+	m.sy = 0
 }
 
 func (m *Mario) Left() {
 	if math.Absf(m.sx) < 0.6 {
 		m.sx -= 0.4
-	}else {
+	} else {
 		m.sx -= 1.0
 	}
 	m.reverse = true
@@ -42,7 +64,7 @@ func (m *Mario) Left() {
 func (m *Mario) Right() {
 	if math.Absf(m.sx) < 0.6 {
 		m.sx += 0.4
-	}else{
+	} else {
 		m.sx += 1.0
 	}
 	m.reverse = false
@@ -50,15 +72,23 @@ func (m *Mario) Right() {
 
 func (m *Mario) Jump() {
 	if !m.Jumping() {
-		m.sy += 4.0
+		m.sy += 5.0
+		m.landing = false
 	}
 }
 
 func (m *Mario) Jumping() bool {
-	if m.y == 0 {
+	return !m.landing
+}
+
+func (m Mario) Rising() bool {
+	if m.landing {
 		return false
 	}
-	return true
+	if 0 < m.sy {
+		return true
+	}
+	return false
 }
 
 func (s Mario) Dots() Dots {
@@ -68,7 +98,7 @@ func (s Mario) Dots() Dots {
 	} else if math.Absf(s.sx) > 0 {
 		if s.sx < 0.0 && !s.reverse {
 			dots = s.stopDots()
-		} else if s.sx > 0.0 && s.reverse{
+		} else if s.sx > 0.0 && s.reverse {
 			dots = s.stopDots()
 		} else if int(s.x)%9 < 3 {
 			dots = s.run1Dots()
@@ -237,7 +267,15 @@ func (s Mario) jumpDots() Dots {
 
 func reverseDost(dots Dots) Dots {
 	for i, dot := range dots {
-		dots[i].X = 13 - dot.X
+		dots[i].X = 11 - dot.X
 	}
 	return dots
+}
+
+func (s Mario) Width() int {
+	return 12
+}
+
+func (s Mario) Height() int {
+	return 16
 }

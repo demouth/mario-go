@@ -23,11 +23,11 @@ func (s Sprite) Y() int {
 	return int(s.y)
 }
 
-func (s *Sprite)SetX(v int){
+func (s *Sprite) SetX(v int) {
 	s.x = float32(v)
 }
 
-func (s *Sprite)SetY(v int){
+func (s *Sprite) SetY(v int) {
 	s.y = float32(v)
 }
 
@@ -42,8 +42,8 @@ func (s *Sprite) Draw() {
 
 func (s Sprite) Dots() Dots {
 	var dots Dots
-	d := NewDot(0,0,0x8A7301)
-	d2 := NewDot(2,1,0xFF0000)
+	d := NewDot(0, 0, 0x8A7301)
+	d2 := NewDot(2, 1, 0xFF0000)
 	dots = Dots{*d, *d2}
 	return dots
 }
